@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" href="css/styles.css">
+</head>
+<body>
+<nav>
+    <div class="nav-left">
+        <a href="/">Home</a>
+    </div>
+    <div class="nav-right">
+        <a href="/signUp">Sign Up</a>
+        <a href="/login">Login</a>
+    </div>
+</nav>
+<div class="container">
+    <h1>Login Page</h1>
+    <form id="loginForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="button" onclick="submitForm()">Login</button>
+    </form>
+</div>
+<footer>
+    <p>&copy; 2024 GreenUAE</p>
+</footer>
+
+<script>
+    function submitForm() {
+        var form = document.getElementById("loginForm");
+        var formData = {
+            email: form.email.value,
+            password: form.password.value
+        };
+
+        fetch("/auth", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.text())
+            .then(response => console.log(response))
+            .then(data => {
+                // Handle success
+                console.log(data);
+                // Optionally, redirect to another page
+               // window.location.href = "/dashboard";
+            })
+            .catch(error => {
+                // Handle error
+                console.error("Error:", error);
+            });
+    }
+</script>
+</body>
+</html>

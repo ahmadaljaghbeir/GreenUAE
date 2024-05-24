@@ -8,7 +8,7 @@ public class AppController {
 
     @GetMapping( "/")
     public String getPage() {
-        return "index";
+        return "home";
     }
 
     @GetMapping(value = "/signUp")
@@ -26,8 +26,8 @@ public class AppController {
         return "dashboard";
     }
 
-    @GetMapping(value = "/uploadPhoto")
+    @GetMapping(value = "/uploadPage")
     public String uploadPhoto() {
-        return "uploadPhoto";
+        return "uploadPage";
     }
 }

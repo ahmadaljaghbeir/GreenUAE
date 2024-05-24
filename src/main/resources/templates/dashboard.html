@@ -1,16 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenUAE Home Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Link to your separate CSS file here -->
+    <link rel="stylesheet" type="text/css" href="/css/dashboardStyle.css">
 </head>
-<body>
-<div class="container">
-    <h1>Dashboard</h1>
-    <a href="/uploadPhoto">Upload Tree Photo</a>
-    <div class="history">
-        <!-- Display user's planting history here -->
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="header w-full py-4">
+    <div class="container mx-auto flex justify-between items-center px-4">
+        <div class="flex items-center">
+            <img src="/images/logo.jpg" alt="logo" class="h-12 w-12 mr-2">
+            <h1 class="text-2xl font-bold">GreenUAE</h1>
+        </div>
+        <nav>
+            <a href="/" class="button-custom" onclick="logout()">Logout</a>
+        </nav>
     </div>
-</div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="welcome-message" id="welcomeMessage">
+        <!-- Welcome message will be displayed here -->
+    </div>
+    <div class="dashboard">
+        <div class="dashboard-box" onclick="window.location.href='points.html'">
+            <img src="../images/CO.jpg" alt="Coins">
+        </div>
+        <div class="dashboard-box" onclick="window.location.href='/uploadPage'">
+            <img src="../images/UPLOAD.jpg" alt="Upload Tree">
+        </div>
+        <div class="dashboard-box" onclick="window.location.href='history.html'">
+            <img src="../images/HIST.jpg" alt="History">
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>&copy; 2024 GreenUAE. All rights reserved</p>
+</footer>
+
+<script>
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    // Display welcome message if cookie exists
+    window.onload = function() {
+        var email = getCookie("email");
+        fetch("/getUser/" + email)
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Convert response body to text
+                } else {
+                    throw new Error("Failed to fetch user data");
+                }
+            })
+            .then(userData => {
+                const username = capitalizeFirstLetter(userData.first_name);
+                if (userData) {
+                    document.getElementById("welcomeMessage").innerText = "Hello " + username + ", welcome back!";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    };
+
+
+    function logout() {
+        // Clear the cookie and redirect to the logout page or any other desired action
+        document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = "/logout";
+    }
+
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+</script>
 </body>
+
 </html>

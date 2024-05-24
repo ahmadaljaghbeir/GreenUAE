@@ -1,15 +1,10 @@
 package org.example.greenuae.controller;
 
 import org.example.greenuae.model.UserEntity;
-import org.example.greenuae.repository.RoleRepository;
-import org.example.greenuae.repository.UserRepository;
 import org.example.greenuae.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,8 +29,8 @@ public class SignUpController {
     }
 
     @GetMapping(value = "/getUser/{id}")
-    public ResponseEntity<UserEntity> getUser(@PathVariable("id") long userId) {
-        return new ResponseEntity<UserEntity>(signUpService.getUserById(userId), HttpStatus.OK);
+    public ResponseEntity<UserEntity> getUser(@PathVariable("id") String email) {
+        return new ResponseEntity<UserEntity>(signUpService.getUserByEmail(email), HttpStatus.OK);
     }
 
     @PutMapping(value = "/updateUser/{id}")

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Tree Photo - GreenUAE</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/css/uploadPageStyle.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="header w-full py-4">
+    <div class="container mx-auto flex justify-between items-center px-4">
+        <h1 class="text-2xl font-bold"><img src="/images/logo.jpg" alt="GreenUAE Logo">GreenUAE</h1>
+        <nav>
+            <a href="dashboard" class="button-custom py-2 px-4 rounded mr-2">Dashboard</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center">
+    <div class="bg-white w-full max-w-4xl shadow-md rounded-lg overflow-hidden flex">
+        <!-- Form Section -->
+        <div class="w-full md:w-1/2 p-8">
+            <h2 class="text-3xl font-bold mb-4">Upload Tree Photo</h2>
+            <form id="uploadForm" >
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="photo">Select Photo:</label>
+                    <input type="file" id="photo" name="tree_photo" accept="image/*" onchange="previewImage()"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="planting_date">Planting Date:</label>
+                    <input type="date" id="planting_date" name="planting_date"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="location">Location (Latitude, Longitude):</label>
+                    <input type="text" id="location" name="gps_location" placeholder="Latitude, Longitude"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required readonly>
+                </div>
+                <div class="flex justify-between">
+                    <button type="button" onclick="getLocation()"
+                            class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Get Location</button>
+                    <button type="button" onclick="upload()" class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Upload</button>
+                </div>
+            </form>
+        </div>
+        <!-- Preview Section -->
+        <div id="preview-container" class="w-full md:w-1/2 p-8 flex justify-center items-center">
+            <img id="preview" class="rounded-lg shadow-md" style="display: none;" />
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>&copy; 2024 GreenUAE. All rights reserved.</p>
+</footer>
+
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        document.getElementById("location").value = `${latitude}, ${longitude}`;
+    }
+
+    function showError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
+
+    function previewImage() {
+        const file = document.getElementById('photo').files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('preview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    async function upload() {
+        // Get form data
+        var form = new FormData(document.getElementById("uploadForm"));
+
+        // Append additional data
+        form.append("points_rewarded", "20");
+
+        const user_id = await getUserId();
+        form.append("user_id", user_id);
+
+        // Send form data using fetch
+        fetch("/addTree", {
+            method: "POST",
+            body: form
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                return response.text().then(text => {
+                    throw new Error(text);
+                });
+            })
+            .then(data => {
+                // Handle success
+                window.location.replace("/dashboard") // Display success message
+            })
+            .catch(error => {
+                // Handle error
+                console.error("Error:", error);
+                alert("Failed to upload photo. Please try again later. Error: " + error.message);
+            });
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    async function getUserId() {
+        var email = getCookie("email");
+        return fetch("/getUser/" + email)
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Convert response body to JSON
+                } else {
+                    throw new Error("Failed to fetch user data");
+                }
+            })
+            .then(userData => {
+                return userData.user_id; // Return the user ID from the JSON data
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                return "error"; // Return an error message or handle it accordingly
+            });
+    }
+</script>
+</body>
+</html>

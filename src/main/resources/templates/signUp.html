@@ -1,46 +1,90 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+
 <head>
-    <title>Sign Up</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Started Now</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/signupStyle.css">
 </head>
-<body>
-<nav>
-    <div class="nav-left">
-        <a href="/">Home</a>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+<!-- Header -->
+<header class="header w-full py-4">
+    <div class="container mx-auto flex justify-between items-center px-4">
+        <h1 class="text-2xl font-bold"><img src="/images/logo.jpg" alt="GreenUAE Logo">GreenUAE</h1>
+        <nav>
+            <a href="/" class="button-custom py-2 px-4 rounded mr-2">Home</a>
+        </nav>
     </div>
-    <div class="nav-right">
-        <a href="/signUp">Sign Up</a>
-        <a href="/login">Login</a>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center">
+    <div class="bg-white w-full max-w-4xl shadow-md rounded-lg overflow-hidden flex">
+        <!-- Form Section -->
+        <div class="w-full md:w-1/2 p-8">
+            <h2 class="text-3xl font-bold mb-4">Get Started Now</h2>
+            <form id="signupForm">
+                <div class="flex mb-4">
+                    <div class="w-1/2 pr-2">
+                        <label class="block text-sm font-bold mb-2" for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" placeholder="Enter your first name"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                               required>
+                    </div>
+                    <div class="w-1/2 pl-2">
+                        <label class="block text-sm font-bold mb-2" for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" placeholder="Enter your last name"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                               required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="email">Email address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Password"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="date_of_birth">Date of Birth</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2" for="phone_number">Phone Number</label>
+                    <input type="tel" id="phone_number" name="phone_number" placeholder="Enter your phone number"
+                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                           required>
+                </div>
+                <div class="mb-6">
+                    <button type="button" onclick="submitForm()"
+                            class="w-full py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">
+                        Signup
+                    </button>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600">Have an account? <a href="login"
+                                                                 class="text-blue-500 hover:underline">Sign in</a></p>
+                </div>
+            </form>
+        </div>
+        <!-- Image Section -->
+        <div class="hidden md:block md:w-1/2 image-container"></div>
     </div>
-</nav>
-<div class="container">
-    <h1>Sign Up Page</h1>
-    <form id="signupForm">
-        <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name" required>
+</main>
 
-        <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" required>
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-
-        <label for="date_of_birth">Date of Birth:</label>
-        <input type="date" id="date_of_birth" name="date_of_birth" required>
-
-        <label for="phone_number">Phone Number:</label>
-        <input type="tel" id="phone_number" name="phone_number" required>
-
-        <button type="button" onclick="submitForm()">Sign Up</button>
-    </form>
-</div>
-
-<footer>
-    <p>&copy; 2024 GreenUAE</p>
+<!-- Footer -->
+<footer class="footer">
+    <p>&copy; 2024 GreenUAE. All rights reserved.</p>
 </footer>
 
 <script>
@@ -64,13 +108,10 @@
         })
             .then(response => response.json())
             .then(data => {
-                // Handle success
                 console.log(data);
-                // Optionally, redirect to another page
-                window.location.href = "/login"; // Change to your success page
+                window.location.href = "/login";
             })
             .catch(error => {
-                // Handle error
                 console.log("Error:", error);
             });
     }

@@ -43,9 +43,9 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public UserEntity getUserById(long id) {
-        return userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User", "Id", id));
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("User", "Email", email));
     }
 
     @Override

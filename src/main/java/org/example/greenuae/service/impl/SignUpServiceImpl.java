@@ -60,6 +60,7 @@ public class SignUpServiceImpl implements SignUpService {
         existingUserEntity.setDate_of_birth(userEntity.getDate_of_birth());
         existingUserEntity.setPhone_number(userEntity.getPhone_number());
 
+
         userRepository.save(existingUserEntity);
         return existingUserEntity;
     }

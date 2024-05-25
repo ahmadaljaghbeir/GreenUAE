@@ -6,9 +6,7 @@ import org.example.greenuae.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class LoginController {
@@ -24,5 +22,20 @@ public class LoginController {
     @PostMapping(value = "/auth")
     public ResponseEntity<AuthResponse> login(@RequestBody UserEntity userEntity) {
         return new ResponseEntity<AuthResponse>(loginService.auth(userEntity), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/mfa")
+    public ResponseEntity<String> twoFactorAuth(@RequestBody UserEntity userEntity) {
+        return new ResponseEntity<String>(loginService.twoFactorAuth(userEntity), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/verify-account")
+    public ResponseEntity<String> verifyAccount(@RequestParam String email, @RequestParam String otp) {
+        return new ResponseEntity<>(loginService.verifyAccount(email, otp), HttpStatus.OK);
+    }
+
+    @PutMapping("/regenerate-otp")
+    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
+        return new ResponseEntity<>(loginService.regenerateOtp(email), HttpStatus.OK);
     }
 }

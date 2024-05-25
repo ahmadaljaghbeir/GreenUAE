@@ -30,4 +30,14 @@ public class AppController {
     public String uploadPhoto() {
         return "uploadPage";
     }
+
+    @GetMapping(value = "/history")
+    public String history() {
+        return "history";
+    }
+
+    @GetMapping(value = "/points")
+    public String points() {
+        return "points";
+    }
 }

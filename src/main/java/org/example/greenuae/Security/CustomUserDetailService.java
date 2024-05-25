@@ -1,4 +1,4 @@
-package org.example.greenuae.Security;
+package org.example.greenuae.security;
 
 import org.example.greenuae.model.Role;
 import org.example.greenuae.model.UserEntity;

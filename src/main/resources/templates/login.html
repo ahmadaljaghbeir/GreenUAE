@@ -40,7 +40,7 @@
                            required>
                 </div>
                 <div class="mb-6">
-                    <button type="button" onclick="submitForm()"
+                    <button type="button" onclick="submitForm2()"
                             class="w-full py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Login
                     </button>
                 </div>
@@ -81,7 +81,9 @@
                     throw new Error('Login failed');
                 }
                 return response.json();
-            })
+            }).then(response => {
+
+             })
             .then(data => {
                 if (data.accessToken) {
                     // Set token as a cookie
@@ -98,6 +100,32 @@
                 }
             })
             .catch(error => {
+                showError("Invalid login credentials. Please try again.");
+                console.error("Error:", error);
+            });
+    }
+
+    function submitForm2() {
+        var form = document.getElementById("loginForm");
+        var formData = {
+            email: form.email.value,
+            password: form.password.value
+        };
+        return fetch("/mfa", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('MFA failed');
+                }
+
+                console.log(response)
+                return response.text();
+            }).catch(error => {
                 showError("Invalid login credentials. Please try again.");
                 console.error("Error:", error);
             });

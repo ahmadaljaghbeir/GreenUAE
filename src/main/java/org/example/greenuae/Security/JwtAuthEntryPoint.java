@@ -1,4 +1,4 @@
-package org.example.greenuae.Security;
+package org.example.greenuae.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

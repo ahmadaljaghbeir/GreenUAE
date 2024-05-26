@@ -26,34 +26,8 @@
 
 <!-- Main Content -->
 <main class="flex-grow flex items-center justify-center">
-    <div class="container mx-auto flex flex-wrap justify-center">
-        <div class="tree-card">
-            <img src="../images/tree3.jpg" alt="Tree 1">
-            <div class="tree-info">
-                <p><strong>Tree number:</strong> 1</p>
-                <p><strong>Tree location:</strong> Dubai</p>
-                <p><strong>Plant date:</strong> 2024-05-01</p>
-                <p><strong>Points given:</strong> 50</p>
-            </div>
-        </div>
-        <div class="tree-card">
-            <img src="../images/tree3.jpg" alt="Tree 2">
-            <div class="tree-info">
-                <p><strong>Tree number:</strong> 2</p>
-                <p><strong>Tree location:</strong> Abu Dhabi</p>
-                <p><strong>Plant date:</strong> 2024-05-10</p>
-                <p><strong>Points given:</strong> 60</p>
-            </div>
-        </div>
-        <div class="tree-card">
-            <img src="../images/tree3.jpg" alt="Tree 3">
-            <div class="tree-info">
-                <p><strong>Tree number:</strong> 3</p>
-                <p><strong>Tree location:</strong> Sharjah</p>
-                <p><strong>Plant date:</strong> 2024-05-15</p>
-                <p><strong>Points given:</strong> 70</p>
-            </div>
-        </div>
+    <div class="container mx-auto flex flex-wrap justify-center" id="tree-container">
+        <!-- Tree cards will be inserted here dynamically -->
     </div>
 </main>
 
@@ -61,6 +35,112 @@
 <footer class="footer">
     <p>&copy; 2024 GreenUAE. All rights reserved.</p>
 </footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        getTreeInfo();
+    });
+
+    async function getTreeInfo() {
+
+        const user_id = await getUserId();
+
+        fetch("/trees", {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("failed");
+            }
+            return response.json();
+        }).then(data => {
+            console.log(data)
+            displayTreeInfo(data);
+        }).catch(error => {
+            alert("Failed to retrieve data. Please try again later. Error: " + error.message);
+        });
+
+    }
+
+    function getUserId() {
+        var email = getCookie("email");
+
+        return fetch("/getUser/" + email)
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Convert response body to JSON
+                } else {
+                    throw new Error("Failed to fetch user data");
+                }
+            })
+            .then(userData => {
+                return userData.user_id; // Return the user ID from the JSON data
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                return "error"; // Return an error message or handle it accordingly
+            });
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    async function displayTreeInfo(data) {
+        const user_id = await getUserId();
+        const treeContainer = document.getElementById("tree-container");
+        treeContainer.innerHTML = ''; // Clear any existing content
+
+        for (var i = 0; i < data.length; i++) {
+            if (user_id === data[i].user_id){
+                const treeCard = document.createElement("div");
+                treeCard.className = "tree-card";
+
+                const treeImg = document.createElement("img");
+                treeImg.src = "data:image/jpeg;base64," + `${data[i].tree_photo}`;
+                treeImg.alt = `Tree ${data[i].tree_id}`;
+                treeImg.style.width = "300px";
+                treeImg.style.height = "300px";
+                treeImg.style.display = "block";
+                treeImg.style.marginLeft = "auto";
+                treeImg.style.marginRight = "auto";
+
+                const treeInfo = document.createElement("div");
+                treeInfo.className = "tree-info";
+
+                const treeNumber = document.createElement("p");
+                treeNumber.innerHTML = `<strong>Tree number:</strong> ${data[i].tree_id}`;
+
+                const treeLocation = document.createElement("p");
+                treeLocation.innerHTML = `<strong>Tree location:</strong> ${data[i].gps_location}`;
+
+                const plantDate = document.createElement("p");
+                plantDate.innerHTML = `<strong>Plant date:</strong> ${data[i].planting_date}`;
+
+                const pointsGiven = document.createElement("p");
+                pointsGiven.innerHTML = `<strong>Points given:</strong> ${data[i].points_rewarded}`;
+
+                treeInfo.appendChild(treeNumber);
+                treeInfo.appendChild(treeLocation);
+                treeInfo.appendChild(plantDate);
+                treeInfo.appendChild(pointsGiven);
+
+                treeCard.appendChild(treeImg);
+                treeCard.appendChild(treeInfo);
+
+                treeContainer.appendChild(treeCard);
+            }
+
+        }
+    }
+
+</script>
 </body>
 
 </html>

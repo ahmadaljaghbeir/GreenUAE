@@ -70,7 +70,7 @@ public class LoginServiceImpl implements LoginService {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
-                LocalDateTime.now()).getSeconds() < (1 * 60)) {
+                LocalDateTime.now()).getSeconds() < (60)) {
             user.setActive(true);
             userRepository.save(user);
             return "new AuthResponse(token);";

@@ -41,6 +41,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/dashboard").authenticated()
                         .requestMatchers("/uploadPage").authenticated()
+                        .requestMatchers("/points").authenticated()
+                        .requestMatchers("/history").authenticated()
                         .requestMatchers("/addTree").authenticated()
                         .requestMatchers( "/**").permitAll())
                 .httpBasic(withDefaults());

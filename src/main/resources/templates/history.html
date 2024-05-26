@@ -43,8 +43,6 @@
 
     async function getTreeInfo() {
 
-        const user_id = await getUserId();
-
         fetch("/trees", {
             method: "GET"
         }).then(response => {

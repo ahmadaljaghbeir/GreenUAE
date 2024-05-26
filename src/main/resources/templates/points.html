@@ -51,45 +51,61 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        fetch("/getPoints")
+        fetch("/trees", {
+            method: "GET"
+        })
             .then(response => response.json())
-            .then(data => {
-                document.getElementById("pointsDisplay").innerText = `Points: ${data.points}`;
+            .then(async data => {
+                var points = await calculatePoints(data);
+                console.log(points)
+                document.getElementById("pointsDisplay").innerText = `Points: ${points}`;
             })
             .catch(error => {
                 console.log("Error:", error);
             });
     });
 
-    function redeemPoints(points) {
-        fetch("/redeemPoints", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ redeem_points: points })
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.success) {
-                    alert("Points redeemed successfully!");
-                    document.getElementById("pointsDisplay").innerText = `Points: ${data.points}`;
+    async function calculatePoints(data) {
+        const user_id = await getUserId();
+        var totalPoints = 0;
+        for (var i = 0; i < data.length; i++) {
+            if (user_id === data[i].user_id) {
+                totalPoints += data[i].points_rewarded;
+            }
+        }
+        return totalPoints;
+    }
+
+    function getUserId() {
+        var email = getCookie("email");
+
+        return fetch("/getUser/" + email)
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Convert response body to JSON
                 } else {
-                    alert("Failed to redeem points. Please try again.");
+                    throw new Error("Failed to fetch user data");
                 }
             })
+            .then(userData => {
+                return userData.user_id; // Return the user ID from the JSON data
+            })
             .catch(error => {
-                console.log("Error:", error);
+                console.error("Error:", error);
+                return "error"; // Return an error message or handle it accordingly
             });
     }
 
-    document.querySelectorAll('.button-custom').forEach(button => {
-        button.addEventListener('click', () => {
-            const points = parseInt(button.innerText.replace('Redeem ', '').replace(' Points', ''));
-            redeemPoints(points);
-        });
-    });
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
 </script>
 </body>
 

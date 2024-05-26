@@ -12,8 +12,7 @@ import java.util.Date;
 
 @Component
 public class JwtGenerator {
-    public String generateToken(Authentication authentication) {
-        String email = authentication.getName();
+    public String generateToken(String email) {
         Date currentUser = new Date();
         Date expirationDate = new Date(currentUser.getTime() + SecurityConstants.JWT_EXPIRATION);
 

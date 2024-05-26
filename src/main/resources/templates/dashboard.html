@@ -19,7 +19,7 @@
             <h1 class="text-2xl font-bold">GreenUAE</h1>
         </div>
         <nav>
-            <a href="/" class="button-custom" onclick="logout()">Logout</a>
+            <button type="button" class="button-custom" onclick="logout()">Logout</button>
         </nav>
     </div>
 </header>
@@ -83,9 +83,36 @@
 
 
     function logout() {
-        // Clear the cookie and redirect to the logout page or any other desired action
-        document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.href = "/logout";
+        // const email = getCookie("email");
+            const email = "ahmad.aljaghbeirr@gmail.com"
+        if (!email) {
+            console.error("Email cookie not found.");
+            return;
+        }
+
+        fetch("/signOut", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: email
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Logout failed');
+                }
+            })
+            .then(() => {
+                // Clear cookies
+                document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+                // Redirect to the login page
+                window.location.replace("login");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
     }
 
     function capitalizeFirstLetter(string) {

@@ -114,7 +114,8 @@
             email: form.email.value,
             password: form.password.value
         };
-        return fetch("/mfa", {
+
+        return fetch("/auth", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -123,16 +124,38 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('MFA failed');
+                    throw new Error('Login failed');
                 }
-
-                console.log(response)
                 return response.text();
-            }).catch(error => {
+            })
+            .then(() => {
+                return fetch("/mfa", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email: formData.email })
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('MFA request failed');
+                }
+                // Redirect to /twoFactorAuth with the email as a query parameter
+                window.location.replace(`/twoFactorAuth?email=${encodeURIComponent(formData.email)}`);
+            })
+            .catch(error => {
                 showError("Invalid login credentials. Please try again.");
                 console.error("Error:", error);
             });
     }
+
+    function showError(message) {
+        // Implement this function to show error messages to the user
+        console.error(message);
+    }
+
+
 
     function setCookie(name, value, minutes = 1) {
         var expires = "";

@@ -39,16 +39,13 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public AuthResponse auth(UserEntity userEntity) {
+    public String auth(UserEntity userEntity) {
         Authentication authentication = authenticationManager.
                 authenticate(new UsernamePasswordAuthenticationToken(userEntity.getEmail()
                         , userEntity.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
 
-//        String auth = twoFactorAuth(userEntity);
-
-        return new AuthResponse(token);
+        return "true";
     }
 
     @Override
@@ -76,9 +73,9 @@ public class LoginServiceImpl implements LoginService {
                 LocalDateTime.now()).getSeconds() < (1 * 60)) {
             user.setActive(true);
             userRepository.save(user);
-            return "OTP verified you can login";
+            return "new AuthResponse(token);";
         }
-        return "Please regenerate otp and try again";
+        return "null";
     }
 
     @Override
@@ -95,5 +92,17 @@ public class LoginServiceImpl implements LoginService {
         user.setOtpGeneratedTime(LocalDateTime.now());
         userRepository.save(user);
         return "Email sent... please verify account within 1 minute";
+    }
+
+    @Override
+    public AuthResponse verifyOtp(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        boolean isActive = user.isActive();
+        if (isActive){
+            String token = jwtGenerator.generateToken(email);
+            return new AuthResponse(token);
+        }
+        return null;
     }
 }

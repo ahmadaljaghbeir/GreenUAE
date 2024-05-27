@@ -13,7 +13,7 @@ public class Tree {
     private long tree_id;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "BLOB")
+    @Column(nullable = false, columnDefinition = "LONGBLOB")
     //MultipartFile
     private byte[] tree_photo;
 
@@ -28,5 +28,4 @@ public class Tree {
 
     @Column(nullable = false)
     private long user_id;
-
 }

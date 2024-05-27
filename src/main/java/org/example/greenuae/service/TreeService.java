@@ -12,7 +12,5 @@ public interface TreeService {
 
     List<Tree> getAllTree();
 
-    Tree updateTree(Tree tree, long id);
-
     void deleteTree(long id);
 }

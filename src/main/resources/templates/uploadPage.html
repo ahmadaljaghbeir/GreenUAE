@@ -115,8 +115,6 @@
         // Get form data
         var form = new FormData(document.getElementById("uploadForm"));
 
-        // Append additional data
-        form.append("points_rewarded", "20");
 
         const user_id = await getUserId();
         form.append("user_id", user_id);
@@ -136,7 +134,7 @@
             })
             .then(data => {
                 // Handle success
-                window.location.replace("/dashboard") // Display success message
+                // window.location.replace("/dashboard") // Display success message
             })
             .catch(error => {
                 // Handle error

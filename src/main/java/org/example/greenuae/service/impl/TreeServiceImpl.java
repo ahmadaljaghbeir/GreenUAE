@@ -1,5 +1,4 @@
 package org.example.greenuae.service.impl;
-
 import org.example.greenuae.exception.ResourceNotFoundException;
 import org.example.greenuae.model.Tree;
 import org.example.greenuae.repository.TreeRepository;
@@ -34,19 +33,6 @@ public class TreeServiceImpl implements TreeService {
         return treeRepository.findAll();
     }
 
-    @Override
-    public Tree updateTree(Tree tree, long id) {
-        Tree existingTree = treeRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Tree", "Id", id));
-
-        existingTree.setTree_photo(tree.getTree_photo());
-        existingTree.setGps_location(tree.getGps_location());
-        existingTree.setPlanting_date(tree.getPlanting_date());
-        existingTree.setPoints_rewarded(tree.getPoints_rewarded());
-
-        treeRepository.save(existingTree);
-        return existingTree;
-    }
 
     @Override
     public void deleteTree(long id) {

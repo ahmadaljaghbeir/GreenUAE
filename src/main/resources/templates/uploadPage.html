@@ -64,9 +64,9 @@
                                required readonly>
                     </div>
                     <div class="flex justify-between">
-                        <button type="button" onclick="getLocation()"
+                        <button id="locationBtn" type="button" onclick="getLocation()"
                                 class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Get Location</button>
-                        <button type="button" onclick="upload()" class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Upload</button>
+                        <button id="uploadBtn" type="button" onclick="upload()" class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Upload</button>
                     </div>
                 </form>
             </div>
@@ -92,17 +92,23 @@
 
 <script>
     function getLocation() {
+        // Show loading state immediately after button click
+        locationBtn.textContent = "Loading...";
+        locationBtn.disabled = true;
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, showError);
         } else {
             alert("Geolocation is not supported by this browser.");
         }
+
     }
 
     function showPosition(position) {
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
         document.getElementById("location").value = `${latitude}, ${longitude}`;
+        locationBtn.textContent = "Get Location";
+        locationBtn.disabled = false;
     }
 
     function showError(error) {
@@ -141,6 +147,10 @@
         const user_id = await getUserId();
         form.append("user_id", user_id);
 
+        // Show loading state immediately after button click
+        uploadBtn.textContent = "Processing...";
+        uploadBtn.disabled = true;
+
         // Send form data using fetch
         fetch("/addTree", {
             method: "POST",
@@ -163,7 +173,10 @@
                 // Handle error
                 console.error("Error:", error);
                 alert("Failed to upload photo. Please try again later. Error: " + error.message);
-            });
+            }).finally(() => {
+            uploadBtn.textContent = "Upload";
+            uploadBtn.disabled = false;
+        });
     }
 
     function getTreeInfo() {
@@ -192,10 +205,10 @@
         treeInfoContainer.innerHTML = '';
 
         const infoArray = [
-            latestTree.info_one,
+            latestTree.info_one.split('- '),
             latestTree.info_two.split('- '),
             latestTree.info_three.split('- '),
-            latestTree.info_four
+            latestTree.info_four.split('- ')
         ];
 
         infoArray.forEach((info, index) => {

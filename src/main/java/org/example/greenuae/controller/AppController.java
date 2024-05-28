@@ -48,4 +48,9 @@ public class AppController {
     public String points() {
         return "points";
     }
+
+    @GetMapping(value = "/treeInfoPage")
+    public String treeInfo() {
+        return "treeInfo";
+    }
 }

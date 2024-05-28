@@ -70,7 +70,10 @@ public class TreeController {
         return treePlantingService.getAllTreeInfo();
     }
 
-
+    @GetMapping(value = "/getTreeInfo/{id}")
+    public ResponseEntity<TreeInfo> getTreesInfo(@PathVariable("id") long treeId) {
+        return new ResponseEntity<TreeInfo>(treePlantingService.getTreeById(treeId), HttpStatus.OK);
+    }
 
     @DeleteMapping(value = "/deleteTree/{id}")
     public ResponseEntity<String> deleteTree(@PathVariable("id") long treeId) {

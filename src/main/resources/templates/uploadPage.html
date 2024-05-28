@@ -7,6 +7,20 @@
     <title>Upload Tree Photo - GreenUAE</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="/css/uploadPageStyle.css" rel="stylesheet">
+    <style>
+        #tree-info-section p, #tree-info-section ul {
+            margin-bottom: 1rem;
+        }
+
+        #treeInfoContainer ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        #treeInfoContainer ul li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -25,39 +39,48 @@
 
 <!-- Main Content -->
 <main class="flex-grow flex items-center justify-center">
-    <div class="bg-white w-full max-w-4xl shadow-md rounded-lg overflow-hidden flex">
-        <!-- Form Section -->
-        <div class="w-full md:w-1/2 p-8">
-            <h2 class="text-3xl font-bold mb-4">Upload Tree Photo</h2>
-            <form id="uploadForm" >
-                <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2" for="photo">Select Photo:</label>
-                    <input type="file" id="photo" name="tree_photo" accept="image/*" onchange="previewImage()"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
-                           required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2" for="planting_date">Planting Date:</label>
-                    <input type="date" id="planting_date" name="planting_date"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
-                           required>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-bold mb-2" for="location">Location (Latitude, Longitude):</label>
-                    <input type="text" id="location" name="gps_location" placeholder="Latitude, Longitude"
-                           class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
-                           required readonly>
-                </div>
-                <div class="flex justify-between">
-                    <button type="button" onclick="getLocation()"
-                            class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Get Location</button>
-                    <button type="button" onclick="upload()" class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Upload</button>
-                </div>
-            </form>
+    <div class="bg-white w-full max-w-4xl shadow-md rounded-lg overflow-hidden mt-8 mb-8">
+        <!-- Form and Preview Section -->
+        <div class="flex flex-wrap">
+            <div class="w-full md:w-1/2 p-8">
+                <h2 class="text-3xl font-bold mb-4">Upload Tree Photo</h2>
+                <form id="uploadForm">
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold mb-2" for="photo">Select Photo:</label>
+                        <input type="file" id="photo" name="tree_photo" accept="image/*" onchange="previewImage()"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                               required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold mb-2" for="planting_date">Planting Date:</label>
+                        <input type="date" id="planting_date" name="planting_date"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                               required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold mb-2" for="location">Location (Latitude, Longitude):</label>
+                        <input type="text" id="location" name="gps_location" placeholder="Latitude, Longitude"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
+                               required readonly>
+                    </div>
+                    <div class="flex justify-between">
+                        <button type="button" onclick="getLocation()"
+                                class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Get Location</button>
+                        <button type="button" onclick="upload()" class="py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Upload</button>
+                    </div>
+                </form>
+            </div>
+            <div class="w-full md:w-1/2 p-8 flex justify-center items-center">
+                <img id="preview" class="rounded-lg shadow-md mb-4" style="display: none; max-width: 100%;" />
+            </div>
         </div>
-        <!-- Preview Section -->
-        <div id="preview-container" class="w-full md:w-1/2 p-8 flex justify-center items-center">
-            <img id="preview" class="rounded-lg shadow-md" style="display: none;" />
+        <!-- Tree Information Section -->
+        <div id="tree-info-section" class="bg-gray-100 w-full p-8 rounded-lg shadow-md mt-8" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4">Tree Information</h2>
+            <p><strong>Tree Species:</strong> <span id="treeSpecies"></span></p>
+            <div id="treeInfoContainer"></div>
+            <p><strong>Impact Category:</strong> <span id="impactCategory"></span></p>
+            <p><strong>Points Awarded:</strong> <span id="points"></span></p>
         </div>
     </div>
 </main>
@@ -115,7 +138,6 @@
         // Get form data
         var form = new FormData(document.getElementById("uploadForm"));
 
-
         const user_id = await getUserId();
         form.append("user_id", user_id);
 
@@ -126,7 +148,7 @@
         })
             .then(response => {
                 if (response.ok) {
-                    return response.text();
+                    return response.json();
                 }
                 return response.text().then(text => {
                     throw new Error(text);
@@ -134,13 +156,74 @@
             })
             .then(data => {
                 // Handle success
-                // window.location.replace("/dashboard") // Display success message
+                console.log('Server Response:', data); // Add debugging
+                getTreeInfo();
             })
             .catch(error => {
                 // Handle error
                 console.error("Error:", error);
                 alert("Failed to upload photo. Please try again later. Error: " + error.message);
             });
+    }
+
+    function getTreeInfo() {
+        fetch("/treeInfo", {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("failed");
+            }
+            return response.json();
+        }).then(treeData => {
+            console.log('Tree Information from getTreeInfo:', treeData)
+            displayTreeInformation(treeData);
+        }).catch(error => {
+            alert("Failed to retrieve data. Please try again later. Error: " + error.message);
+        });
+    }
+
+    function displayTreeInformation(treeData) {
+        const latestTree = treeData[treeData.length - 1];
+        console.log('Latest Tree Information:', latestTree); // Add debugging
+
+        document.getElementById("treeSpecies").textContent = latestTree.tree_species || 'N/A';
+
+        const treeInfoContainer = document.getElementById("treeInfoContainer");
+        treeInfoContainer.innerHTML = '';
+
+        const infoArray = [
+            latestTree.info_one,
+            latestTree.info_two.split('- '),
+            latestTree.info_three.split('- '),
+            latestTree.info_four
+        ];
+
+        infoArray.forEach((info, index) => {
+            if (Array.isArray(info)) {
+                const paragraph = document.createElement("p");
+                paragraph.textContent = info[0].trim();
+                treeInfoContainer.appendChild(paragraph);
+
+                const ul = document.createElement("ul");
+                info.slice(1).forEach(point => {
+                    if (point.trim() !== '') {
+                        const li = document.createElement("li");
+                        li.textContent = point.trim();
+                        ul.appendChild(li);
+                    }
+                });
+                treeInfoContainer.appendChild(ul);
+            } else {
+                const paragraph = document.createElement("p");
+                paragraph.textContent = info;
+                treeInfoContainer.appendChild(paragraph);
+            }
+        });
+
+        document.getElementById("impactCategory").textContent = latestTree.impact_category || 'N/A';
+        document.getElementById("points").textContent = latestTree.points || 'N/A';
+
+        document.getElementById("tree-info-section").style.display = 'block';
     }
 
     function getCookie(name) {

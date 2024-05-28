@@ -7,5 +7,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 public interface TreePlantingService {
+    List<TreeInfo> getAllTreeInfo();
+
     Mono<String> processTreeSubmission(Tree tree, long tree_id);
 }

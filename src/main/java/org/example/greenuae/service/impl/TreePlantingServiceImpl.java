@@ -1,5 +1,6 @@
 package org.example.greenuae.service.impl;
 
+
 import org.example.greenuae.config.TreeIdentifierConfig;
 import org.example.greenuae.model.Tree;
 import org.example.greenuae.model.TreeInfo;
@@ -61,6 +62,7 @@ public class TreePlantingServiceImpl implements TreePlantingService {
             treeData.setInfo_three(paragraphs[2]);
             treeData.setInfo_four(paragraphs[3]);
             treeData.setImpact_category(impactCategory);
+            treeData.setPoints(points);
             tree.setPoints_rewarded(points);
             treeData.setTree_id(tree_id);
             treeInfoRepository.save(treeData);
@@ -69,5 +71,10 @@ public class TreePlantingServiceImpl implements TreePlantingService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public List<TreeInfo> getAllTreeInfo() {
+        return treeInfoRepository.findAll();
     }
 }

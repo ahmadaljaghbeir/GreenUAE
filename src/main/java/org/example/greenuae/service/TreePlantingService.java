@@ -10,4 +10,6 @@ public interface TreePlantingService {
     List<TreeInfo> getAllTreeInfo();
 
     Mono<String> processTreeSubmission(Tree tree, long tree_id);
+
+    TreeInfo getTreeById(long treeId);
 }

@@ -1,6 +1,7 @@
 package org.example.greenuae.controller;
 
 import org.example.greenuae.model.Tree;
+import org.example.greenuae.model.TreeInfo;
 import org.example.greenuae.service.TreePlantingService;
 import org.example.greenuae.service.TreeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,12 @@ public class TreeController {
     public List<Tree> getTrees() {
         return treeService.getAllTree();
     }
+
+    @GetMapping(value = "/treeInfo")
+    public List<TreeInfo> getTreeInfo() {
+        return treePlantingService.getAllTreeInfo();
+    }
+
 
 
     @DeleteMapping(value = "/deleteTree/{id}")

@@ -30,5 +30,8 @@ public class TreeInfo {
     private String impact_category;
 
     @Column(nullable = false)
+    private int points;
+
+    @Column(nullable = false)
     private long tree_id;
 }

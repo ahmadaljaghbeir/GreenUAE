@@ -2,6 +2,7 @@ package org.example.greenuae.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.example.greenuae.security.AES;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,35 +12,45 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class UserEntity {
+
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long user_id;
 
+    @Convert(converter = AES.class)
     @Column
     private String first_name;
 
+    @Convert(converter = AES.class)
     @Column
     private String last_name;
 
+    @Convert(converter = AES.class)
     @Column
     private String email;
 
+    @Convert(converter = AES.class)
     @Column
     private String password;
 
+    @Convert(converter = AES.class)
     @Column
     private String date_of_birth;
 
+    @Convert(converter = AES.class)
     @Column
     private String phone_number;
 
+    @Convert(converter = AES.class)
     @Column
     private boolean active;
 
+    @Convert(converter = AES.class)
     @Column
     private String otp;
 
+    @Convert(converter = AES.class)
     @Column
     private LocalDateTime otpGeneratedTime;
 

@@ -7,6 +7,5 @@ public interface LoginService {
     String auth(UserEntity user);
     String twoFactorAuth(UserEntity user);
     String verifyAccount(String email, String otp);
-    String regenerateOtp(String email);
     AuthResponse verifyOtp(String email);
 }

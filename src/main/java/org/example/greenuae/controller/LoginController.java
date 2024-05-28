@@ -29,18 +29,13 @@ public class LoginController {
         return new ResponseEntity<String>(loginService.twoFactorAuth(userEntity), HttpStatus.OK);
     }
 
-    @PutMapping(value = "/verify-account")
-    public ResponseEntity<String> verifyAccount(@RequestParam String email, @RequestParam String otp) {
+    @GetMapping(value = "/verify-account")
+    public ResponseEntity<String> verify(@RequestParam String email, @RequestParam String otp) {
         return new ResponseEntity<>(loginService.verifyAccount(email, otp), HttpStatus.OK);
     }
 
     @GetMapping(value = "/verify")
-    public ResponseEntity<AuthResponse> verifyAccount(@RequestParam String email) {
+    public ResponseEntity<AuthResponse> verify(@RequestParam String email) {
         return new ResponseEntity<AuthResponse>(loginService.verifyOtp(email), HttpStatus.OK);
-    }
-
-    @PutMapping("/regenerate-otp")
-    public ResponseEntity<String> regenerateOtp(@RequestParam String email) {
-        return new ResponseEntity<>(loginService.regenerateOtp(email), HttpStatus.OK);
     }
 }

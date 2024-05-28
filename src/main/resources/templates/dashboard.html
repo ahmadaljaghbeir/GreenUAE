@@ -85,7 +85,7 @@
     function logout() {
         const email = getCookie("email");
         if (!email) {
-            console.error("Email cookie not found.");
+            window.location.replace("login");
             return;
         }
 

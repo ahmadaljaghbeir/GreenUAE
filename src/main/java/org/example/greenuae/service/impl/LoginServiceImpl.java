@@ -45,7 +45,7 @@ public class LoginServiceImpl implements LoginService {
                         , userEntity.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return "true";
+        return "user exist";
     }
 
     @Override
@@ -62,7 +62,7 @@ public class LoginServiceImpl implements LoginService {
         userEntity.setOtpGeneratedTime(LocalDateTime.now());
         userRepository.save(userEntity);
 
-        return "successful";
+        return "OTP generated and send it to " + user.getEmail();
     }
 
     @Override
@@ -73,25 +73,9 @@ public class LoginServiceImpl implements LoginService {
                 LocalDateTime.now()).getSeconds() < (60)) {
             user.setActive(true);
             userRepository.save(user);
-            return "new AuthResponse(token);";
+            return "You are successfully authenticated, please return to the website and click CONTINUE";
         }
-        return "null";
-    }
-
-    @Override
-    public String regenerateOtp(String email) {
-        UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-        String otp = otpUtil.generateOtp();
-        try {
-            emailUtil.sendOtpEmail(email, otp);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Unable to send otp please try again");
-        }
-        user.setOtp(otp);
-        user.setOtpGeneratedTime(LocalDateTime.now());
-        userRepository.save(user);
-        return "Email sent... please verify account within 1 minute";
+        return "OTP timed-out, please try again  ";
     }
 
     @Override

@@ -29,6 +29,8 @@
         <!-- Form Section -->
         <div class="w-full md:w-1/2 p-8">
             <h2 class="text-3xl font-bold mb-4">Welcome back!</h2>
+            <!-- Error message placeholder -->
+            <div id="errorMessage" class="text-red-500 mb-4" style="display: none;"></div>
             <form id="loginForm">
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="email">Email address</label>
@@ -43,7 +45,7 @@
                            required>
                 </div>
                 <div class="mb-6">
-                    <button type="button" onclick="submitForm2()"
+                    <button type="button" id="loginButton" onclick="submitForm()"
                             class="w-full py-2 px-4 rounded button-custom focus:outline-none focus:shadow-outline">Login
                     </button>
                 </div>
@@ -65,55 +67,18 @@
 </footer>
 
 <script>
+
     function submitForm() {
         var form = document.getElementById("loginForm");
+        var loginButton = document.getElementById("loginButton");
         var formData = {
             email: form.email.value,
             password: form.password.value
         };
 
-        fetch("/auth", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Login failed');
-                }
-                return response.json();
-            }).then(response => {
-
-             })
-            .then(data => {
-                if (data.accessToken) {
-                    // Set token as a cookie
-                    setCookie('jwt', data.accessToken);
-
-                    // Set email as a cookie
-                    setCookie('email', formData.email);
-
-                    // After successful login, fetch the dashboard with authorization token
-                    window.location.replace("/dashboard");
-                } else {
-                    console.log("Invalid login credentials. Please try again.");
-                    showError("Invalid login credentials. Please try again.");
-                }
-            })
-            .catch(error => {
-                showError("Invalid login credentials. Please try again.");
-                console.error("Error:", error);
-            });
-    }
-
-    function submitForm2() {
-        var form = document.getElementById("loginForm");
-        var formData = {
-            email: form.email.value,
-            password: form.password.value
-        };
+        // Show loading state immediately after button click
+        loginButton.textContent = "Loading...";
+        loginButton.disabled = true;
 
         return fetch("/auth", {
             method: "POST",
@@ -124,58 +89,56 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Login failed');
+                    throw new Error("Login failed")
                 }
                 return response.text();
             })
-            .then(() => {
-                return fetch("/mfa", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ email: formData.email })
-                });
-            })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('MFA request failed');
+                if(response === "user exist"){
+                    clearError();
+                    return fetch("/mfa", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ email: formData.email })
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('MFA request failed');
+                        }
+                        // Redirect to /twoFactorAuth with the email as a query parameter
+                        window.location.replace(`/twoFactorAuth?email=${encodeURIComponent(formData.email)}`);
+                    }).catch(error => {
+                        showError("Invalid login credentials. Please try again.");
+                        console.error("Error:", error);
+                    });
                 }
-                // Redirect to /twoFactorAuth with the email as a query parameter
-                window.location.replace(`/twoFactorAuth?email=${encodeURIComponent(formData.email)}`);
+                else {
+                    showError("Invalid login credentials. Please try again.");
+                }
             })
             .catch(error => {
                 showError("Invalid login credentials. Please try again.");
                 console.error("Error:", error);
+            })
+            .finally(() => {
+                // Hide loading state
+                loginButton.textContent = "Login";
+                loginButton.disabled = false;
             });
     }
 
     function showError(message) {
-        // Implement this function to show error messages to the user
-        console.error(message);
+        var errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
     }
 
-
-
-    function setCookie(name, value, minutes = 1) {
-        var expires = "";
-        if (minutes) {
-            var date = new Date();
-            date.setTime(date.getTime() + (minutes * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    function clearError() {
+        var errorMessage = document.getElementById("errorMessage");
+        errorMessage.textContent = "";
+        errorMessage.style.display = "none";
     }
-
-    function showError(message) {
-        var errorElement = document.getElementById("error-message");
-        if (errorElement) {
-            errorElement.textContent = message;
-        } else {
-            console.error(message);
-        }
-    }
-
 
 </script>
 </body>

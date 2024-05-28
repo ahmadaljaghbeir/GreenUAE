@@ -8,7 +8,7 @@ public interface SignUpService {
 
     UserEntity getUserByEmail(String email);
 
-    UserEntity updateUser(UserEntity userEntity, long id);
+    UserEntity updateUser(UserEntity userEntity, String email);
 
     void deleteUser(long id);
 }

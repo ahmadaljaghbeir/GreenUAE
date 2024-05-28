@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AppController {
 
-    @GetMapping( "/")
+    @GetMapping("/")
     public String getPage() {
         return "home";
     }
@@ -52,5 +52,10 @@ public class AppController {
     @GetMapping(value = "/treeInfoPage")
     public String treeInfo() {
         return "treeInfo";
+    }
+
+    @GetMapping(value = "/updateUser")
+    public String updateUser() {
+        return "updateUser";
     }
 }

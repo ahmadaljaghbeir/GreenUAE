@@ -7,11 +7,9 @@ import org.example.greenuae.repository.RoleRepository;
 import org.example.greenuae.repository.UserRepository;
 import org.example.greenuae.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Collections;
 
 @Service
@@ -49,14 +47,14 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public UserEntity updateUser(UserEntity userEntity, long id) {
-        UserEntity existingUserEntity = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User", "Id", id));
+    public UserEntity updateUser(UserEntity userEntity, String email) {
+        UserEntity existingUserEntity = userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("User", "Id", email));
 
         existingUserEntity.setFirst_name(userEntity.getFirst_name());
         existingUserEntity.setLast_name(userEntity.getLast_name());
         existingUserEntity.setEmail(userEntity.getEmail());
-        existingUserEntity.setPassword(userEntity.getPassword());
+        existingUserEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         existingUserEntity.setDate_of_birth(userEntity.getDate_of_birth());
         existingUserEntity.setPhone_number(userEntity.getPhone_number());
 

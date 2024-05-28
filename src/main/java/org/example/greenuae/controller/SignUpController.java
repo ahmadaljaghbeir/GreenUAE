@@ -34,8 +34,8 @@ public class SignUpController {
     }
 
     @PutMapping(value = "/updateUser/{id}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable("id") long userId, @RequestBody UserEntity userEntity) {
-        return new ResponseEntity<UserEntity>(signUpService.updateUser(userEntity, userId), HttpStatus.OK);
+    public ResponseEntity<UserEntity> updateUser(@PathVariable("id") String email, @RequestBody UserEntity userEntity) {
+        return new ResponseEntity<UserEntity>(signUpService.updateUser(userEntity, email), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/deleteUser/{id}")

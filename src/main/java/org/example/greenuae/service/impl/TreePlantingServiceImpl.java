@@ -53,7 +53,7 @@ public class TreePlantingServiceImpl implements TreePlantingService {
             // Step 4: Assign points based on the impact category
             int points = pointAllocator.determinePoints(impactCategory);
             System.out.println("Points Awarded: " + points);
-            String[] paragraphs = treeInfo.split("\\n");
+            String[] paragraphs = treeInfo.split("\\n\\n");
             TreeInfo treeData = new TreeInfo();
             treeData.setTree_species(treeSpecies);
             treeData.setInfo_one(paragraphs[0]);

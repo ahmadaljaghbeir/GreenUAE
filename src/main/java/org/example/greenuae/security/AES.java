@@ -19,50 +19,52 @@ public class AES implements AttributeConverter<Object, String> {
     @Value("${aes.encryption.key}")
     private String encryptionKey;
 
-    private final String encryptionCipher = "AES";
+    private final String encryptionCipher = "AES/ECB/PKCS5Padding";
 
     private Key key;
-    private Cipher cipher;
+    private ThreadLocal<Cipher> cipherThreadLocal = ThreadLocal.withInitial(() -> {
+        try {
+            return Cipher.getInstance("AES/ECB/PKCS5Padding");
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("Failed to initialize Cipher", e);
+        }
+    });
 
     private Key getKey() throws GeneralSecurityException, UnsupportedEncodingException {
         if (key == null) {
             if (encryptionKey.length() != 16 && encryptionKey.length() != 24 && encryptionKey.length() != 32) {
                 throw new GeneralSecurityException("Invalid key length: must be 16, 24, or 32 bytes");
             }
-            key = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), encryptionCipher);
+            key = new SecretKeySpec(encryptionKey.getBytes("UTF-8"), "AES");
         }
         return key;
     }
 
-    private Cipher getCipher() throws GeneralSecurityException {
-        if (cipher == null)
-            cipher = Cipher.getInstance(encryptionCipher);
-        return cipher;
-    }
-
     private void initCipher(int encryptMode) throws GeneralSecurityException, UnsupportedEncodingException {
-        getCipher().init(encryptMode, getKey());
+        Cipher cipher = cipherThreadLocal.get();
+        cipher.init(encryptMode, getKey());
     }
 
     @SneakyThrows
     @Override
-    // Encryption
     public String convertToDatabaseColumn(Object attribute) {
-        if (attribute == null)
+        if (attribute == null) {
             return null;
+        }
         initCipher(Cipher.ENCRYPT_MODE);
         byte[] bytes = SerializationUtils.serialize(attribute);
-        return Base64.getEncoder().encodeToString(getCipher().doFinal(bytes));
+        return Base64.getEncoder().encodeToString(cipherThreadLocal.get().doFinal(bytes));
     }
 
     @SneakyThrows
     @Override
-    // Decryption
     public Object convertToEntityAttribute(String dbData) {
-        if (dbData == null)
+        if (dbData == null) {
             return null;
+        }
         initCipher(Cipher.DECRYPT_MODE);
-        byte[] bytes = getCipher().doFinal(Base64.getDecoder().decode(dbData));
+        byte[] decodedBytes = Base64.getDecoder().decode(dbData);
+        byte[] bytes = cipherThreadLocal.get().doFinal(decodedBytes);
         return SerializationUtils.deserialize(bytes);
     }
 }

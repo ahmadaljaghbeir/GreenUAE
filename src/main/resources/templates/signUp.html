@@ -54,7 +54,10 @@
                     <label class="block text-sm font-bold mb-2" for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="Password"
                            class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
-                           required>
+                           required oninput="validatePassword()">
+                    <p id="passwordHelp" class="text-xs text-gray-600 mt-2">
+                        Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+                    </p>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="date_of_birth">Date of Birth</label>
@@ -64,9 +67,9 @@
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-bold mb-2" for="phone_number">Phone Number</label>
-                    <input type="tel" id="phone_number" name="phone_number" placeholder="Enter your phone number"
+                    <input type="tel" id="phone_number" name="phone_number" placeholder="+971 5x xxx xxxx"
                            class="shadow appearance-none border rounded w-full py-2 px-3 input-custom leading-tight focus:outline-none focus:shadow-outline"
-                           required>
+                           required oninput="formatPhoneNumber()">
                 </div>
                 <div class="mb-6">
                     <button type="button" onclick="submitForm()"
@@ -91,6 +94,34 @@
 </footer>
 
 <script>
+    function validatePassword() {
+        const passwordInput = document.getElementById('password');
+        const passwordHelp = document.getElementById('passwordHelp');
+        const password = passwordInput.value;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!regex.test(password)) {
+            passwordHelp.classList.add('text-red-500');
+            passwordHelp.classList.remove('text-gray-600');
+        } else {
+            passwordHelp.classList.add('text-gray-600');
+            passwordHelp.classList.remove('text-red-500');
+        }
+    }
+
+    function formatPhoneNumber() {
+        const phoneInput = document.getElementById('phone_number');
+        let phoneNumber = phoneInput.value.replace(/\D/g, '');
+
+        if (phoneNumber.startsWith('9715')) {
+            phoneNumber = '+' + phoneNumber.substring(0, 3) + ' ' + phoneNumber.substring(3, 4) + ' ' + phoneNumber.substring(4, 7) + ' ' + phoneNumber.substring(7, 11);
+        } else if (phoneNumber.startsWith('5')) {
+            phoneNumber = '+971 5' + phoneNumber.substring(1, 2) + ' ' + phoneNumber.substring(2, 5) + ' ' + phoneNumber.substring(5, 9);
+        }
+
+        phoneInput.value = phoneNumber;
+    }
+
     function submitForm() {
         var form = document.getElementById("signupForm");
         var formData = {

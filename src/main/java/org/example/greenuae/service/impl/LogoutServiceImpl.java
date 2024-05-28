@@ -23,7 +23,6 @@ public class LogoutServiceImpl implements LogoutService {
         user.setOtp(null);
         user.setOtpGeneratedTime(null);
         userRepository.save(user);
-        System.out.println("user.toString()");
         return "Logged out successfully";
     }
 }

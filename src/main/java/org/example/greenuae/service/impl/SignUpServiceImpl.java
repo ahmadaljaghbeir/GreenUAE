@@ -54,7 +54,6 @@ public class SignUpServiceImpl implements SignUpService {
         existingUserEntity.setFirst_name(userEntity.getFirst_name());
         existingUserEntity.setLast_name(userEntity.getLast_name());
         existingUserEntity.setEmail(userEntity.getEmail());
-        existingUserEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         existingUserEntity.setDate_of_birth(userEntity.getDate_of_birth());
         existingUserEntity.setPhone_number(userEntity.getPhone_number());
 
